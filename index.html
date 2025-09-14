@@ -2,54 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>FNF VS Sonic.exe Shim Loader</title>
-  
+  <title>Kade Engine Shim Loader</title>
   <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-    #openfl-content { width: 100%; height: 100%; background: #000; }
+    html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#000; }
+    #openfl-content { width:100%; height:100%; }
+    iframe { border:none; width:100%; height:100%; display:block; }
   </style>
 </head>
 <body>
-
   <noscript>Please enable JavaScript to view this page.</noscript>
   <div id="openfl-content"></div>
 
   <script>
-    // Define Kade Engine shim so the original game's lime.embed call doesn't break
+    // Define Kade Engine for Google Sites loader
     window['Kade Engine'] = {
       embed: function(name, containerId, width, height, options) {
         var container = document.getElementById(containerId);
         if (!container) return;
 
-        // Create an iframe to load your actual FNF build (Repo A)
         var iframe = document.createElement('iframe');
-        iframe.src = "https://rolandelving.github.io/FNF-mod/"; // <-- link to your first GitHub Pages repo
+        iframe.src = "https://rolandelving.github.io/FNF-mod/index.html"; // First repo
         iframe.width = width;
         iframe.height = height;
         iframe.style.border = "none";
-        iframe.style.display = "block";
         iframe.style.background = "#000";
-
         container.appendChild(iframe);
       }
     };
-
-    // Wait for DOM ready and then call lime.embed
-    function startGame() {
-      if (typeof lime !== 'undefined' && lime.embed) {
-        lime.embed("Kade Engine", "openfl-content", 1280, 720, { parameters: {} });
-      } else {
-        // lime not loaded yet, retry shortly
-        setTimeout(startGame, 100);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(startGame, 500); // give a small delay then start
-    });
   </script>
 </body>
 </html>

@@ -13,55 +13,31 @@
             if (container.dataset.embedded) return;
             container.dataset.embedded = true;
 
-            // Create iframe
-            const iframe = document.createElement('iframe');
-            iframe.width = width;
-            iframe.height = height;
-            iframe.style.border = "none";
-            iframe.style.background = "#000";
-            iframe.style.display = "block";
+            // Fetch the original index.html from the FNF-mod repo
+            fetch('https://cdn.jsdelivr.net/gh/Rolandelving/FNF-mod@main/index.html')
+                .then(res => res.text())
+                .then(html => {
+                    // Rewrite all relative URLs to JSDelivr CDN URLs
+                    const rewrittenHTML = html
+                        .replace(/src="(?!https?:\/\/)([^"]+)"/g, (m, p1) => {
+                            return `src="https://cdn.jsdelivr.net/gh/Rolandelving/FNF-mod@main/${p1}"`;
+                        })
+                        .replace(/url\(['"]?(?!https?:\/\/)([^'")]+)['"]?\)/g, (m, p1) => {
+                            return `url('https://cdn.jsdelivr.net/gh/Rolandelving/FNF-mod@main/${p1}')`;
+                        });
 
-            // Build a fully rewritten HTML for FNF-mod
-            const iframeHTML = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>FNF VS Sonic.exe ONLINE</title>
-<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
+                    // Create the iframe and inject rewritten HTML
+                    const iframe = document.createElement('iframe');
+                    iframe.width = width;
+                    iframe.height = height;
+                    iframe.style.border = 'none';
+                    iframe.style.background = '#000';
+                    iframe.style.display = 'block';
+                    iframe.srcdoc = rewrittenHTML;
 
-<script src="https://cdn.jsdelivr.net/gh/Rolandelving/FNF-mod@main/Kade%20Engine.js" defer></script>
-
-<style>
-html,body { margin:0; padding:0; height:100%; overflow:hidden; }
-#openfl-content { width:100%; height:100%; background:#000; }
-</style>
-
-</head>
-<body>
-<div id="openfl-content"></div>
-
-<script>
-function loadGame() {
-    if (typeof lime !== 'undefined' && lime.embed) {
-        lime.embed("Kade Engine", "openfl-content", 1280, 720, { parameters: {} });
-    } else {
-        setTimeout(loadGame, 100);
-    }
-}
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(loadGame, 500);
-});
-</script>
-
-</body>
-</html>
-`;
-
-            // Load the HTML into the iframe
-            iframe.srcdoc = iframeHTML;
-            container.appendChild(iframe);
+                    container.appendChild(iframe);
+                })
+                .catch(err => console.error('Failed to load FNF-mod index.html:', err));
         }
     };
 
